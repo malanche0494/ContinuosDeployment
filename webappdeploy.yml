@@ -1,0 +1,29 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: 'Compilacion'
+  inputs:
+    command: 'build'
+    projects: '**/*.csproj'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/DespliegueContinuo'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publicacion'
+  inputs:
+    command: 'publish'
+    publishWebProjects: true
+    workingDirectory: '$(System.DefaultWorkingDirectory)/DespliegueContinuo'
+
+- task: AzureRmWebAppDeployment@4
+  displayName: 'Despliegue'
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: 'Visual Studio Enterprise(f0315b35-7ca0-4ff7-bf6f-af41a9662780)'
+    appType: 'webApp'
+    WebAppName: 'Ejercicio-grupo3'
+    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
